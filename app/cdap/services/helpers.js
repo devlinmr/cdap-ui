@@ -527,23 +527,29 @@ function categorizeGraphQlErrors(error) {
     errorsByOrigin[GENERIC_ERROR_ORIGIN] = error.message;
   }
 
-  graphQLErrors.forEach(error => {
-    const errorOrigin = objectQuery(error, 'extensions', 'exception', 'errorOrigin') || GENERIC_ERROR_ORIGIN;
-    if (errorsByOrigin.hasOwnProperty(errorOrigin)) {
-      errorsByOrigin[errorOrigin].push(error.message);
-    }
-    else {
-      errorsByOrigin[errorOrigin] = [error.message];
-    }
-  });
+  if (Array.isArray(graphQLErrors)) {
+    graphQLErrors.forEach(error => {
+      const errorOrigin = objectQuery(error, 'extensions', 'exception', 'errorOrigin') || GENERIC_ERROR_ORIGIN;
+      if (errorsByOrigin.hasOwnProperty(errorOrigin)) {
+        errorsByOrigin[errorOrigin].push(error.message);
+      }
+      else {
+        errorsByOrigin[errorOrigin] = [error.message];
+      }
+    });
+  }
+
   // Categorize all graphQL network errors with type 'network'
-  networkErrors.forEach(error => {
-    if (errorsByOrigin.hasOwnProperty('network')) {
-      errorsByOrigin['network'].push(error.message);
-    } else {
-      errorsByOrigin['network'] = [error.message];
-    }
-  });
+  if (Array.isArray(networkErrors)) {
+    networkErrors.forEach(error => {
+      if (errorsByOrigin.hasOwnProperty('network')) {
+        errorsByOrigin['network'].push(error.message);
+      } else {
+        errorsByOrigin['network'] = [error.message];
+      }
+    });
+  }
+
   return errorsByOrigin;
 }
 
